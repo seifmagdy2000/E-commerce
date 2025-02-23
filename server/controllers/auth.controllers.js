@@ -1,9 +1,22 @@
-export const login = (req, res) => {
-  res.send("Login route");
-};
-export const register = (req, res) => {
-  res.send("Register route");
-};
-export const logout = (req, res) => {
-  res.send("Logout route");
+import { registerService } from "../service/auth.service.js";
+
+export const register = async (req, res) => {
+  try {
+    const { email, password, name } = req.body;
+
+    if (!email || !password || !name) {
+      return res
+        .status(400)
+        .json({ message: "Name, email, and password are required" });
+    }
+
+    const newUser = await registerService({ email, password, name });
+
+    return res.status(201).json({
+      message: "User created successfully",
+      user: newUser,
+    });
+  } catch (error) {
+    return res.status(400).json({ message: error.message });
+  }
 };
