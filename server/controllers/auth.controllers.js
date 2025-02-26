@@ -5,40 +5,51 @@ import jwt from "jsonwebtoken";
 
 // Generate Access and Refresh Tokens
 const generateToken = (id) => {
-  const accessToken = jwt.sign(
-    { userId: id },
-    process.env.ACCESS_TOKEN_SECRET,
-    { expiresIn: "15m" }
-  );
-  const refreshToken = jwt.sign(
-    { userId: id },
-    process.env.REFRESH_TOKEN_SECRET,
-    { expiresIn: "7d" }
-  );
-  return { accessToken, refreshToken };
+  return {
+    accessToken: jwt.sign({ userId: id }, process.env.ACCESS_TOKEN_SECRET, {
+      expiresIn: "15m",
+    }),
+    refreshToken: jwt.sign({ userId: id }, process.env.REFRESH_TOKEN_SECRET, {
+      expiresIn: "7d",
+    }),
+  };
 };
 
-// Store Refresh Token in Redis
+// Store Refresh Token in Redis (with error handling)
 const storeRefreshToken = async (userId, refreshToken) => {
-  await redis.set(
-    `refresh_token_${userId}`,
-    refreshToken,
-    "EX",
-    7 * 24 * 60 * 60
-  ); // 7 days
+  try {
+    await redis.set(
+      `refresh_token_${userId}`,
+      refreshToken,
+      "EX",
+      7 * 24 * 60 * 60
+    ); // 7 days
+  } catch (error) {
+    console.error("Redis error storing refresh token:", error);
+  }
+};
+
+// Remove Refresh Token from Redis
+const removeRefreshToken = async (userId) => {
+  try {
+    await redis.del(`refresh_token_${userId}`);
+  } catch (error) {
+    console.error("Redis error removing refresh token:", error);
+  }
 };
 
 // Set Cookies in Response
 const setCookies = (res, accessToken, refreshToken) => {
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.COOKIE_SECURE === "true", // Read from .env
     sameSite: "strict",
     maxAge: 15 * 60 * 1000, // 15 min
   });
+
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.COOKIE_SECURE === "true",
     sameSite: "strict",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
@@ -113,17 +124,27 @@ export const login = async (req, res) => {
     return res.status(400).json({ message: error.message });
   }
 };
-// Logout
+
+// Logout User
 export const logout = async (req, res) => {
   try {
-    const refreshToken = req.cookies.refreshToken;
+    const { refreshToken } = req.cookies;
     if (!refreshToken) {
       return res.status(400).json({ message: "Refresh token not found" });
     }
-    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-    await redis.del(`refresh_token_${decoded.userId}`);
+
+    let decoded;
+    try {
+      decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    } catch (err) {
+      return res.status(400).json({ message: "Invalid refresh token" });
+    }
+
+    await removeRefreshToken(decoded.userId);
+
     res.clearCookie("accessToken");
     res.clearCookie("refreshToken");
+
     return res.status(200).json({ message: "User logged out successfully" });
   } catch (error) {
     return res.status(400).json({ message: error.message });
