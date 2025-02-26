@@ -113,3 +113,19 @@ export const login = async (req, res) => {
     return res.status(400).json({ message: error.message });
   }
 };
+// Logout
+export const logout = async (req, res) => {
+  try {
+    const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) {
+      return res.status(400).json({ message: "Refresh token not found" });
+    }
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    await redis.del(`refresh_token_${decoded.userId}`);
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+    return res.status(200).json({ message: "User logged out successfully" });
+  } catch (error) {
+    return res.status(400).json({ message: error.message });
+  }
+};
