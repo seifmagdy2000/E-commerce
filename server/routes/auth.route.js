@@ -16,4 +16,6 @@ router.post("/logout", logout);
 
 router.post("/refresh-token", refreshTokenMethod);
 
+//router.get("/profile",protectRoute, getProfile)
+
 export default router;

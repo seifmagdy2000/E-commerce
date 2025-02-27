@@ -96,3 +96,6 @@ export const refreshTokenMethod = async (req, res) => {
       .json({ message: "Error refreshing access token", error: error.message });
   }
 };
+// export const getProfile = async (req, res) => {
+
+// };
