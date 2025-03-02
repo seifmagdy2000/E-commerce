@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use("/api/auth", authRouter);
 app.use("/api/products", productsRouter);
-app.use("/api/cart", productsRouter);
+app.use("/api/cart", cartRouter);
 
 app.listen(PORT, () => {
   DB();
