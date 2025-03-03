@@ -3,6 +3,7 @@ import {
   addToCartService,
   removeAllCartItemsService,
   removeItemService,
+  updateCartItemQuantityService,
 } from "../service/cart.services.js";
 
 export const getCartItems = async (req, res) => {
@@ -25,10 +26,10 @@ export const getCartItems = async (req, res) => {
 export const addToCart = async (req, res) => {
   try {
     const { productId, quantity } = req.body;
-    if (!productId || !quantity) {
+    if (!productId || !quantity || quantity <= 0) {
       return res
         .status(400)
-        .json({ message: "Product ID and quantity are required" });
+        .json({ message: "Product ID and valid quantity are required" });
     }
 
     const updatedCart = await addToCartService(req.user, productId, quantity);
@@ -59,30 +60,22 @@ export const removeAllCartItems = async (req, res) => {
 
 export const updateQuantity = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { quantity } = req.body;
-    const user = req.user;
-
-    if (!quantity || quantity <= 0) {
+    const { productId, quantity } = req.body;
+    if (!productId || !quantity || quantity <= 0) {
       return res
         .status(400)
-        .json({ message: "Quantity must be greater than zero" });
+        .json({ message: "Product ID and valid quantity are required" });
     }
 
-    const existingCartItem = user.cartItems.find(
-      (item) => item.id.toString() === id
+    const updatedItem = await updateCartItemQuantityService(
+      req.user,
+      productId,
+      quantity
     );
-
-    if (!existingCartItem) {
-      return res.status(404).json({ message: "Item not found in cart" });
-    }
-
-    existingCartItem.quantity = quantity;
-    await user.save();
 
     return res.status(200).json({
       message: "Quantity updated successfully",
-      item: existingCartItem,
+      item: updatedItem,
     });
   } catch (error) {
     return res.status(500).json({
