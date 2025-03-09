@@ -6,6 +6,7 @@ import productsRouter from "./routes/products.route.js";
 import DB from "./config/DB.js";
 import cartRouter from "./routes/cart.route.js";
 import couponsRouter from "./routes/coupons.route.js";
+import paymentRouter from "./routes/payment.route.js";
 
 const PORT = process.env.PORT || 8080;
 const app = express();
@@ -17,6 +18,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/coupons", couponsRouter);
+app.use("/api/payment", paymentRouter);
 
 app.listen(PORT, () => {
   DB();
