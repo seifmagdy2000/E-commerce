@@ -1,6 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { ShoppingCart, UserPlus, LogIn, LogOut } from "lucide-react";
+import { ShoppingCart, UserPlus, LogIn, LogOut, Lock } from "lucide-react";
+
+const cartItemCount = 3; // Hardcoded for now, later can be dynamic
 
 const classes = {
   commonLink:
@@ -9,37 +11,40 @@ const classes = {
 };
 
 function DesktopNavbar() {
-  const user = true; // Change to false for testing logged-out state
+  const user = true; // Change to false for testing
+  const isAdmin = true; // Change to false if user isn't admin
 
-  const links = [];
+  const links = user
+    ? [
+        {
+          to: "/cart",
+          text: "Cart",
+          icon: (
+            <div className="relative">
+              <ShoppingCart size={20} />
+              <span className="absolute -top-2 -right-3 bg-white text-orange-500 text-xs font-bold w-4 h-4 flex items-center justify-center rounded-full">
+                {cartItemCount}
+              </span>
+            </div>
+          ),
+        },
+        { to: "/logout", text: "Logout", icon: <LogOut size={20} /> },
+        ...(isAdmin ? [{ to: "/dashboard", text: "Dashboard", icon: <Lock size={20} />  }] : []),
+      ]
+    : [
+        { to: "/login", text: "Login", icon: <LogIn size={20} /> },
+        { to: "/signup", text: "Sign Up", icon: <UserPlus size={20} /> },
+      ];
 
-  if (!user) {
-    links.push(
-      <Link key="login" to="/login" className={`text-white ${classes.commonLink}`}>
-        <span>Login</span> <LogIn size={20} />
-      </Link>
-    );
-
-    links.push(
-      <Link key="signup" to="/signup" className={`text-white ${classes.commonLink}`}>
-        <span>Sign Up</span> <UserPlus size={20} />
-      </Link>
-    );
-  } 
-    links.push(
-      <Link key="cart" to="/cart" className={`text-white ${classes.commonLink}`}>
-        <span>Cart</span> <ShoppingCart size={20} />
-      </Link>
-    );
-
-    links.push(
-      <Link key="logout" to="/logout" className={`text-white ${classes.commonLink}`}>
-        <span>Logout</span> <LogOut size={20} />
-      </Link>
-    );
-  
-
-  return <nav className={classes.navContainer}>{links}</nav>;
+  return (
+    <nav className={classes.navContainer}>
+      {links.map((link) => (
+        <Link key={link.to} to={link.to} className={`text-white ${classes.commonLink}`}>
+          <span>{link.text}</span> {link.icon}
+        </Link>
+      ))}
+    </nav>
+  );
 }
 
 export default DesktopNavbar;
