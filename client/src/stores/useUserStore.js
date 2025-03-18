@@ -74,8 +74,13 @@ export const useUserStore = create(
       },
     }),
     {
-      name: "user-auth-storage", // Persist user auth state
-      getStorage: () => localStorage, // Explicitly define storage
+      name: "user-auth-storage",
+      getStorage: () => localStorage,
     }
   )
 );
+
+const handleError = (set, error, defaultMessage) => {
+  set({ loading: false });
+  toast.error(error.response?.data?.message || defaultMessage);
+};

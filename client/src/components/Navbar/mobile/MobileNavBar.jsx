@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut } from "lucide-react";
 
 const classes = {
   menuButton: "text-white focus:outline-none",
@@ -13,7 +13,7 @@ const classes = {
     "text-gray-800 text-lg font-medium flex items-center space-x-3 p-3 hover:bg-gray-100 rounded-lg transition",
 };
 
-const MobileNavbar = ({ links }) => {
+const MobileNavbar = ({ links, logout }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   // Prevent background scrolling when menu is open
@@ -24,7 +24,7 @@ const MobileNavbar = ({ links }) => {
       document.body.classList.remove("overflow-hidden");
     }
     return () => document.body.classList.remove("overflow-hidden");
-  }, [menuOpen]);``
+  }, [menuOpen]);
 
   return (
     <div className="md:hidden">
@@ -61,16 +61,30 @@ const MobileNavbar = ({ links }) => {
 
           {/* Navigation Links */}
           <nav className={classes.navContainer} role="navigation">
-            {links.map(({ to, text, icon }) => (
-              <Link
-                key={to}
-                to={to}
-                className={classes.navLink}
-                onClick={() => setMenuOpen(false)}
-              >
-                {icon} <span>{text}</span>
-              </Link>
-            ))}
+            {links.map(({ to, text, icon, onClick }) =>
+              onClick ? (
+                // Handle Logout Button
+                <button
+                  key={text}
+                  onClick={() => {
+                    onClick(); // Call logout function
+                    setMenuOpen(false); // Close menu
+                  }}
+                  className={`${classes.navLink} flex w-full text-left`}
+                >
+                  {icon} <span>{text}</span>
+                </button>
+              ) : (
+                <Link
+                  key={to}
+                  to={to}
+                  className={classes.navLink}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {icon} <span>{text}</span>
+                </Link>
+              )
+            )}
           </nav>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ShoppingCart, UserPlus, LogIn, LogOut, LayoutDashboard } from "lucide-react";
 import MobileNavBar from "../mobile/MobileNavBar.jsx";
 import { useUserStore } from "../../../stores/useUserStore.js";
@@ -15,36 +15,45 @@ const classes = {
     "absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full",
 };
 
-
-const getLinks = (user, isAdmin) => {
-  const cartItemCount = user?.cartItems?.length || 0; // 
-
-  return user
-    ? [
-        {
-          to: "/cart",
-          text: "Cart",
-          icon: (
-            <div className="relative">
-              <ShoppingCart size={20} />
-              {cartItemCount > 0 && <span className={classes.cartBubble}>{cartItemCount}</span>}
-            </div>
-          ),
-        },
-        { to: "/logout", text: "Logout", icon: <LogOut size={20} /> },
-        ...(isAdmin ? [{ to: "/dashboard", text: "Dashboard", icon: <LayoutDashboard size={20} /> }] : []),
-      ]
-    : [
-        { to: "/login", text: "Login", icon: <LogIn size={20} /> },
-        { to: "/signup", text: "Sign Up", icon: <UserPlus size={20} /> },
-      ];
-};
-
 function DesktopNavbar() {
-  const { user } = useUserStore();
-  const isAdmin = user?.role === "admin"; 
+  const { user, logout } = useUserStore();
+  const navigate = useNavigate();
+  const isAdmin = user?.role === "admin";
 
-  const links = getLinks(user, isAdmin);
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login"); // Redirect to login page
+  };
+
+  const getLinks = () => {
+    const cartItemCount = user?.cartItems?.length || 0;
+
+    return user
+      ? [
+          {
+            to: "/cart",
+            text: "Cart",
+            icon: (
+              <div className="relative">
+                <ShoppingCart size={20} />
+                {cartItemCount > 0 && <span className={classes.cartBubble}>{cartItemCount}</span>}
+              </div>
+            ),
+          },
+          {
+            text: "Logout",
+            icon: <LogOut size={20} />,
+            onClick: handleLogout, // Call handleLogout on click
+          },
+          ...(isAdmin ? [{ to: "/dashboard", text: "Dashboard", icon: <LayoutDashboard size={20} /> }] : []),
+        ]
+      : [
+          { to: "/login", text: "Login", icon: <LogIn size={20} /> },
+          { to: "/signup", text: "Sign Up", icon: <UserPlus size={20} /> },
+        ];
+  };
+
+  const links = getLinks();
 
   return (
     <header className={classes.header}>
@@ -56,15 +65,25 @@ function DesktopNavbar() {
 
         {/* Desktop Navbar */}
         <nav className={classes.navContainer}>
-          {links.map((link) => (
-            <Link key={link.to} to={link.to} className={`text-white ${classes.commonLink}`}>
-              <span>{link.text}</span> {link.icon}
-            </Link>
-          ))}
+          {links.map((link) =>
+            link.onClick ? (
+              <button
+                key={link.text}
+                onClick={link.onClick}
+                className={`text-white ${classes.commonLink}`}
+              >
+                <span>{link.text}</span> {link.icon}
+              </button>
+            ) : (
+              <Link key={link.to} to={link.to} className={`text-white ${classes.commonLink}`}>
+                <span>{link.text}</span> {link.icon}
+              </Link>
+            )
+          )}
         </nav>
 
-        {/* Mobile Burger Menu */}
-        <MobileNavBar links={links} />
+        {/* Mobile Navbar - Pass logout explicitly */}
+        <MobileNavBar links={links} logout={handleLogout} />
       </div>
     </header>
   );
