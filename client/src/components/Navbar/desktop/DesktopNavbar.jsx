@@ -1,9 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { ShoppingCart, UserPlus, LogIn, LogOut } from "lucide-react";
+import { ShoppingCart, UserPlus, LogIn, LogOut, LayoutDashboard } from "lucide-react";
 import MobileNavBar from "../mobile/MobileNavBar.jsx";
-
-const cartItemCount = 3; // Hardcoded for now, later can be dynamic
+import { useUserStore } from "../../../stores/useUserStore.js";
 
 const classes = {
   header: "fixed top-0 left-0 w-full bg-orange-500 h-16 flex items-center px-6 shadow-lg z-50",
@@ -15,38 +14,41 @@ const classes = {
   cartBubble:
     "absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full",
 };
-// Define navigation links
-const getLinks = (user) => {
-  return user ? [
-      {
-        to: "/cart",
-        text: "Cart",
-        icon: (
-          <div className="relative">
-            <ShoppingCart size={20} />
-            <span className={classes.cartBubble}>{cartItemCount}</span>
-          </div>
-        ),
-      },
-      { to: "/logout", text: "Logout", icon: <LogOut size={20} /> },
-      ...(isAdmin ? [{ to: "/dashboard", text: "Dashboard", icon: "" }] : []),
-    ]
-  : [
-      { to: "/login", text: "Login", icon: <LogIn size={20} /> },
-      { to: "/signup", text: "Sign Up", icon: <UserPlus size={20} /> },
-    ];
-  }
+
+
+const getLinks = (user, isAdmin) => {
+  const cartItemCount = user?.cartItems?.length || 0; // 
+
+  return user
+    ? [
+        {
+          to: "/cart",
+          text: "Cart",
+          icon: (
+            <div className="relative">
+              <ShoppingCart size={20} />
+              {cartItemCount > 0 && <span className={classes.cartBubble}>{cartItemCount}</span>}
+            </div>
+          ),
+        },
+        { to: "/logout", text: "Logout", icon: <LogOut size={20} /> },
+        ...(isAdmin ? [{ to: "/dashboard", text: "Dashboard", icon: <LayoutDashboard size={20} /> }] : []),
+      ]
+    : [
+        { to: "/login", text: "Login", icon: <LogIn size={20} /> },
+        { to: "/signup", text: "Sign Up", icon: <UserPlus size={20} /> },
+      ];
+};
 
 function DesktopNavbar() {
-  const user = false; // Change to true for testing
-  const isAdmin = true;// Change to false if user isn't admin
-  const links = getLinks(user) ;
+  const { user } = useUserStore();
+  const isAdmin = user?.role === "admin"; 
 
+  const links = getLinks(user, isAdmin);
 
   return (
     <header className={classes.header}>
       <div className={classes.container}>
-        
         {/* Logo */}
         <Link to="/" className={classes.logo}>
           E-commerce

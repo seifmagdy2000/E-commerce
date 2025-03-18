@@ -24,7 +24,7 @@ const MobileNavbar = ({ links }) => {
       document.body.classList.remove("overflow-hidden");
     }
     return () => document.body.classList.remove("overflow-hidden");
-  }, [menuOpen]);
+  }, [menuOpen]);``
 
   return (
     <div className="md:hidden">
