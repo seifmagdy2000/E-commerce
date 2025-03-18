@@ -21,7 +21,7 @@ function App() {
     <div className="h-screen bg-white text-black flex items-center justify-center">
       <div className="w-full max-w-4xl mx-auto p-4">
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={user ? <Navigate to="/" /> : <LoginPage />} />
           <Route path="/signup" element={user ? <Navigate to="/" /> : <SignupPage />} />
           <Route path="/login" element={user ? <Navigate to="/" /> : <LoginPage />} />
         </Routes>
