@@ -5,8 +5,8 @@ import DesktopNavbar from "./desktop/DesktopNavbar.jsx";
 
 const classes = {
   commonLink: "flex items-center space-x-2 border-2 border-white rounded-2xl px-4 py-2 transition hover:bg-white hover:text-orange-500",
-  header: "fixed top-0 left-0 w-full bg-orange-500 h-16 flex items-center px-6 shadow-lg",
-}
+  header: "sticky top-0 left-0 w-full bg-orange-500 h-16 flex items-center px-6 shadow-lg z-50", 
+};
 function Navbar() {
 
 
@@ -20,7 +20,7 @@ function Navbar() {
         </Link>
 
         {/* Navigation */}
-        <nav className="flex items-center space-x-4">
+        <nav className="flex items-center space-x-4 ">
           <DesktopNavbar/>
         </nav>
       </div>
