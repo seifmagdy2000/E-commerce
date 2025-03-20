@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, LogOut } from "lucide-react";
+import { Menu, X,  } from "lucide-react";
 
 const classes = {
   menuButton: "text-white focus:outline-none",
@@ -12,7 +12,6 @@ const classes = {
   navLink:
     "text-gray-800 text-lg font-medium flex items-center space-x-3 p-3 hover:bg-gray-100 rounded-lg transition",
 };
-
 const MobileNavbar = ({ links, logout }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 

@@ -3,9 +3,9 @@ import Category from "../components/Category";
 
 const classes = {
   headingContainer: "text-center ", 
-  titleText: "text-4xl font-extrabold text-orange-500",
+  titleText: "text-3xl font-bold text-orange-500 mb-2",
   paragraphText: "text-lg text-gray-600",
-  mainContainer: "flex flex-col min-h-screen", 
+  mainContainer: "flex flex-col min-h-screen",
   grid: "grid grid-cols-1 md:grid-cols-3 gap-8 p-6",
 };
 

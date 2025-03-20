@@ -45,7 +45,7 @@ function DesktopNavbar() {
             icon: <LogOut size={20} />,
             onClick: handleLogout, // Call handleLogout on click
           },
-          ...(isAdmin ? [{ to: "/dashboard", text: "Dashboard", icon: <LayoutDashboard size={20} /> }] : []),
+          ...(isAdmin ? [{ to: "/secret-dashboard", text: "Dashboard", icon: <LayoutDashboard size={20} /> }] : []),
         ]
       : [
           { to: "/login", text: "Login", icon: <LogIn size={20} /> },
@@ -81,7 +81,6 @@ function DesktopNavbar() {
             )
           )}
         </nav>
-
         {/* Mobile Navbar - Pass logout explicitly */}
         <MobileNavBar links={links} logout={handleLogout} />
       </div>
