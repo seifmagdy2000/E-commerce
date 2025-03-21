@@ -8,13 +8,16 @@ import cartRouter from "./routes/cart.route.js";
 import couponsRouter from "./routes/coupons.route.js";
 import paymentRouter from "./routes/payment.route.js";
 import analyticsRouter from "./routes/analytics.route.js";
+import cors from "cors";
 
 const PORT = process.env.PORT || 8080;
 const app = express();
 
 //Middlewares
-app.use(express.json());
+app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
+app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
+
 app.use("/api/auth", authRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/cart", cartRouter);

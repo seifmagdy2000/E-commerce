@@ -32,26 +32,25 @@ export const featuredProductsService = async () => {
 // Add a product with Cloudinary image upload
 export const addProductService = async (product) => {
   try {
-    let cloudResponse = null;
-    if (product.image) {
-      cloudResponse = await cloudinary.uploader.upload(product.image, {
+    let imageUrl = "";
+
+    // Check if image exists and is Base64
+    if (product.image && product.image.startsWith("data:image")) {
+      const cloudResponse = await cloudinary.uploader.upload(product.image, {
         folder: "products",
       });
+      imageUrl = cloudResponse.secure_url;
     }
 
     const newProduct = new Product({
-      name: product.name,
-      description: product.description,
-      price: product.price,
-      category: product.category,
-      image: cloudResponse?.secure_url || "",
-      quantity: product.quantity,
+      ...product,
+      image: imageUrl,
     });
 
     await newProduct.save();
     return newProduct;
   } catch (error) {
-    throw new Error(error.message);
+    throw new Error("Error saving product: " + error.message);
   }
 };
 

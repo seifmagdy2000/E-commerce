@@ -1,21 +1,21 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Upload, PlusCircle, Loader, Divide } from "lucide-react";
+import { Upload, PlusCircle, Loader } from "lucide-react";
 import toast from "react-hot-toast";
+import { useProductStore } from "../stores/useProductStore";
 
 const classes = {
-  //container: "sm:px-6 lg:px-8",
   formContainer: "w-full bg-white rounded-lg", 
   formGroup: "mb-4 flex flex-col",
-  label: "block text-gray-700 font-medium mb-1 text-left ", // Align labels to the left
-  input: "w-full px-4 py-2 border border-gray-300 rounded-lg ",
-  select: "w-full px-4 py-2 border rounded-lg border-gray-300 ",
-  fileInput: "w-full px-4 py-2 border border-gray-300  rounded-lg ",
+  label: "block text-gray-700 font-medium mb-1 text-left",
+  input: "w-full px-4 py-2 border border-gray-300 rounded-lg",
+  select: "w-full px-4 py-2 border rounded-lg border-gray-300",
+  fileInput: "w-full px-4 py-2 border border-gray-300 rounded-lg",
   button: "w-full py-2 mt-4 bg-orange-500 text-white font-bold rounded-lg hover:bg-orange-600 transition flex items-center justify-center gap-2",
   buttonDisabled: "bg-gray-400 cursor-not-allowed",
-  spinner: "w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin",
+  spinner: "w-5 h-5 animate-spin",
+  imagePreview: "mt-2 w-24 h-24 object-cover rounded-lg border",
 };
-
 
 function CreateProductTab() {
   const [formState, setFormState] = useState({
@@ -27,14 +27,24 @@ function CreateProductTab() {
     quantity: "",
   });
 
-  const [loading, setLoading] = useState(false);
-  const categories= ["Jeans","Shoes","Jackets","Tshirts","Glasses","Suits"]
+  const [preview, setPreview] = useState(null);
+  const { createProduct, loading } = useProductStore();
+  const categories = ["Jeans", "Shoes", "Jackets", "Tshirts", "Glasses", "Suits"];
+
   const handleInputChange = (e) => {
     setFormState({ ...formState, [e.target.name]: e.target.value });
   };
 
   const handleFileChange = (e) => {
-    setFormState({ ...formState, image: e.target.files[0] });
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormState((prev) => ({ ...prev, image: reader.result })); // Send Base64 string
+        setPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const validate = () => {
@@ -54,45 +64,42 @@ function CreateProductTab() {
     e.preventDefault();
     if (!validate()) return;
 
-    setLoading(true);
-    toast.promise(
-      new Promise((resolve) => setTimeout(resolve, 2000)),
-      {
-        loading: "Creating product...",
-        success: "Product created successfully!",
-        error: "Something went wrong!",
-      }
-    ).then(() => {
-      setFormState({ name: "", description: "", price: "", category: "", image: null, quantity: "" });
-      setLoading(false);
-    });
+    const formData = new FormData();
+    formData.append("name", formState.name);
+    formData.append("description", formState.description);
+    formData.append("price", formState.price);
+    formData.append("category", formState.category);
+    formData.append("quantity", formState.quantity);
+    formData.append("image", formState.image);
+
+    try {
+      await createProduct(formData);
+      toast.success("Product created successfully!");
+    } catch (error) {
+      toast.error("Failed to create product!");
+    }
   };
 
   return (
-    <div className={classes.container}>
-      {/* Form Animation */}
+    <div>
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }}>
         <div className={classes.formContainer}>
           <form onSubmit={handleSubmit}>
-            {/* Product Name */}
             <div className={classes.formGroup}>
               <label htmlFor="name" className={classes.label}>Product Name</label>
               <input type="text" id="name" name="name" className={classes.input} value={formState.name} onChange={handleInputChange} required />
             </div>
 
-            {/* Description */}
             <div className={classes.formGroup}>
               <label htmlFor="description" className={classes.label}>Description</label>
               <textarea id="description" name="description" className={classes.input} value={formState.description} onChange={handleInputChange} required />
             </div>
 
-            {/* Price */}
             <div className={classes.formGroup}>
               <label htmlFor="price" className={classes.label}>Price ($)</label>
               <input type="number" id="price" name="price" className={classes.input} value={formState.price} onChange={handleInputChange} required />
             </div>
 
-            {/* Category */}
             <div className={classes.formGroup}>
               <label htmlFor="category" className={classes.label}>Category</label>
               <select id="category" name="category" className={classes.select} value={formState.category} onChange={handleInputChange} required>
@@ -102,23 +109,21 @@ function CreateProductTab() {
                 ))}
               </select>
             </div>
-            
-            {/* Quantity */}
+
             <div className={classes.formGroup}>
               <label htmlFor="quantity" className={classes.label}>Quantity</label>
               <input type="number" id="quantity" name="quantity" className={classes.input} value={formState.quantity} onChange={handleInputChange} required />
             </div>
 
-            {/* Image Upload */}
             <div className={classes.formGroup}>
               <label className={`${classes.label} flex items-center gap-2`}>
                 <Upload size={20} />
                 Upload Image
               </label>
               <input type="file" accept="image/*" onChange={handleFileChange} className={classes.fileInput} required />
+              {preview && <img src={preview} alt="Preview" className={classes.imagePreview} />}
             </div>
 
-            {/* Submit Button with Loading Spinner */}
             <motion.button
               type="submit"
               className={`${classes.button} ${loading ? classes.buttonDisabled : ""}`}
