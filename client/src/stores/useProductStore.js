@@ -7,11 +7,36 @@ export const useProductStore = create((set) => ({
   loading: false,
 
   setProducts: (products) => set({ products }),
-  fetchAllProducts: async (productData) => {
+
+  fetchAllProducts: async (page = 1) => {
     set({ loading: true });
+
     try {
-      const response = await axios.get("http://localhost:8080/api/products");
-    } catch (error) {}
+      const res = await fetch(`/api/products?page=${page}`);
+
+      if (!res.ok) {
+        throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`);
+      }
+
+      const data = await res.json();
+
+      set({
+        products: data?.data || [],
+        pagination: {
+          currentPage: data?.currentPage || 1,
+          totalPages: data?.totalPages || 1,
+          totalItems: data?.totalItems || 0,
+          perPage: data?.perPage || 10,
+        },
+        loading: false,
+      });
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      set({
+        error: error.message || "Failed to fetch products",
+        loading: false,
+      });
+    }
   },
 
   createProduct: async (product) => {
@@ -47,12 +72,40 @@ export const useProductStore = create((set) => ({
       set({ loading: false });
     }
   },
+
   deleteProduct: async (productId) => {
     try {
-    } catch (error) {}
+      const response = await axios.delete(`/products/${productId}`);
+
+      set((prev) => ({
+        products: prev.products.filter((product) => product._id !== productId),
+      }));
+
+      toast.success("Product deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      toast.error("Failed to delete product.");
+    }
   },
+
   toggleFeaturedProducts: async (productId) => {
     try {
-    } catch (error) {}
+      const response = await axios.patch(
+        `/products/${productId}/toggle-featured`
+      );
+
+      set((prev) => ({
+        products: prev.products.map((product) =>
+          product._id === productId
+            ? { ...product, isFeatured: !product.isFeatured }
+            : product
+        ),
+      }));
+
+      toast.success("Product featured status updated!");
+    } catch (error) {
+      console.error("Error toggling featured status:", error);
+      toast.error("Failed to update featured status.");
+    }
   },
 }));

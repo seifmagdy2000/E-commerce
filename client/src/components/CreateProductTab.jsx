@@ -17,6 +17,7 @@ const classes = {
   imagePreview: "mt-2 w-24 h-24 object-cover rounded-lg border",
 };
 
+
 function CreateProductTab() {
   const [formState, setFormState] = useState({
     name: "",
@@ -26,11 +27,23 @@ function CreateProductTab() {
     image: null,
     quantity: "",
   });
-
+  const validate = () => {
+    if (!formState.name) return toast.error("Product name is required!");
+    if (!formState.description) return toast.error("Description is required!");
+    if (!formState.price || isNaN(formState.price) || formState.price <= 0)
+      return toast.error("Valid price is required!");
+    if (!formState.category) return toast.error("Category is required!");
+    if (!formState.quantity || isNaN(formState.quantity) || formState.quantity < 0)
+      return toast.error("Quantity must be a positive number!");
+    if (!formState.image) return toast.error("Please upload an image!");
+  
+    return true;
+  };
+  
   const [preview, setPreview] = useState(null);
   const { createProduct, loading } = useProductStore();
   const categories = ["Jeans", "Shoes", "Jackets", "Tshirts", "Glasses", "Suits"];
-
+  
   const handleInputChange = (e) => {
     setFormState({ ...formState, [e.target.name]: e.target.value });
   };
@@ -47,18 +60,6 @@ function CreateProductTab() {
     }
   };
 
-  const validate = () => {
-    if (!formState.name) return toast.error("Product name is required!");
-    if (!formState.description) return toast.error("Description is required!");
-    if (!formState.price || isNaN(formState.price) || formState.price <= 0)
-      return toast.error("Valid price is required!");
-    if (!formState.category) return toast.error("Category is required!");
-    if (!formState.quantity || isNaN(formState.quantity) || formState.quantity < 0)
-      return toast.error("Quantity must be a positive number!");
-    if (!formState.image) return toast.error("Please upload an image!");
-
-    return true;
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -74,7 +75,15 @@ function CreateProductTab() {
 
     try {
       await createProduct(formData);
-      toast.success("Product created successfully!");
+      setFormState({
+        
+        name: "",
+        description: "",
+        price: "",
+        category: "",
+        image: null,
+        quantity: "",
+      });
     } catch (error) {
       toast.error("Failed to create product!");
     }

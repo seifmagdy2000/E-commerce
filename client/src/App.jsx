@@ -15,8 +15,8 @@ function App() {
   }, []);
 
   const classes = {
-    container: "bg-white text-black flex items-center justify-center",
-    wrapper: "w-full max-w-4xl mx-auto p-4",
+    container: "bg-white text-black flex items-center justify-center max-w-full",
+    wrapper: "w-full max-w-6xl p-4 justify-center",
     loading: "flex items-center justify-center bg-white h-screen",
     spinner: "animate-spin rounded-full h-16 w-16 border-t-4 border-orange-500 border-solid"
   };

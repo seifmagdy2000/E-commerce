@@ -8,7 +8,7 @@ import AnalyticsTab from "../components/AnalyticsTab.jsx";
 const classes = {
   container: " flex flex-col items-center justify-center sm:px-6 lg:px-8 w-full",
   title: "mt-6 text-center text-3xl font-extrabold text-orange-500",
-  tabContainer: "min-w-full max-w-3xl bg-white p-6 rounded-lg shadow-lg",
+  tabContainer: "min-w-full max-w-xl bg-white p-6 rounded-lg shadow-lg",
   tabList: "flex justify-between border-b border-gray-300",
   tab: "flex-1 text-center py-3 cursor-pointer font-medium text-xs sm:text-sm md:text-base",
   activeTab: "border-b-2 border-orange-500 text-orange-500 font-semibold",
@@ -22,7 +22,7 @@ const tabs = [
 ];
 
 function AdminPage() {
-  const [activeTab, setActiveTab] = useState("create");
+  const [activeTab, setActiveTab] = useState("Create");
 
   return (
     <div className={classes.container}>
