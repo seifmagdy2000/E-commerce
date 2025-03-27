@@ -3,10 +3,10 @@ import { useProductStore } from "../stores/useProductStore";
 import { Trash, Star, ChevronDown, ChevronUp } from "lucide-react";
 
 const classes = {
-  container: "mt-6 w-full max-w-5xl mx-auto bg-white p-6 rounded-lg shadow-lg flex flex-col items-center", 
+  container: "mt-6 w-full max-w-5xl mx-auto bg-white p-6 rounded-lg flex flex-col items-center", 
   title: "text-lg font-semibold text-gray-700 mb-4 text-left",
   list: "w-full flex flex-col items-center space-y-4",
-  card: "w-full max-w-4xl p-4 border border-gray-200 rounded-lg shadow-sm cursor-pointer transition-all duration-300 flex",
+  card: "w-full max-w-4xl p-4  rounded-lg shadow-sm cursor-pointer transition-all duration-300 flex",
   expandedCard: "bg-gray-100 p-6 ",
   image: "w-24 h-24 object-cover rounded-lg",
   infoContainer: "ml-4 flex flex-col overflow-x-auto overflow-y-auto ",
@@ -17,7 +17,7 @@ const classes = {
   button: "p-2 rounded-md hover:bg-gray-100",
   featured: "text-yellow-500",
   pagination: "w-full flex justify-between items-center mt-4 px-4",
-  pageButton: "px-3 py-1 bg-orange-500 text-white rounded-md disabled:opacity-50",
+  pageButton: "px-3 py-1 bg-orange-500 text-white rounded-md disabled:opacity-50 hover:bg-orange-600",
 };
 
 
@@ -51,7 +51,12 @@ function ProductsList() {
               <div className={classes.infoContainer}>
                 <p className={classes.name}>{product.name}</p>
                 <p className={classes.price}>${product.price}</p>
-                {expandedCard === product._id && <p className={classes.description}>{product.description}</p>}
+                
+                {expandedCard === product._id && <div>
+                    <p className={classes.price}>Quantity: {product.quantity}</p>
+
+                  <p className={classes.description}>{product.description}</p>
+                 </div>}
                 <div className={classes.actions}>
                   <button
                     onClick={(e) => {
@@ -73,7 +78,7 @@ function ProductsList() {
                   </button>
                 </div>
               </div>
-              <div className="flex items-center ml-4">
+              <div className="flex items-center ml-auto betwee">
                 {expandedCard === product._id ? <ChevronUp /> : <ChevronDown />}
               </div>
             </div>

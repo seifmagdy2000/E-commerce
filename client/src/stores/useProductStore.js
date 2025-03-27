@@ -90,9 +90,7 @@ export const useProductStore = create((set) => ({
 
   toggleFeaturedProducts: async (productId) => {
     try {
-      const response = await axios.patch(
-        `/products/${productId}/toggle-featured`
-      );
+      const response = await axios.patch(`/products/${productId}`);
 
       set((prev) => ({
         products: prev.products.map((product) =>
