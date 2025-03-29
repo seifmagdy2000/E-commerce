@@ -80,7 +80,7 @@ export const deleteProductService = async (id) => {
 export const getRecommendedProductsService = async () => {
   try {
     const products = await Product.aggregate([{ $sample: { size: 3 } }]);
-    return products; // ✅ Fix: missing return
+    return products;
   } catch (error) {
     throw new Error(error.message);
   }
@@ -90,6 +90,8 @@ export const getRecommendedProductsService = async () => {
 export const getProductsByCategoryService = async (category) => {
   try {
     const products = await Product.find({ category }).lean();
+    console.log(products);
+
     return products;
   } catch (error) {
     throw new Error(error.message);

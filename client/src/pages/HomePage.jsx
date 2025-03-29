@@ -10,18 +10,18 @@ const classes = {
 };
 
 const Categories = [
-  { href: "/jeans", name: "Jeans", imageUrl: "/jeans.jpeg" },
-  { href: "/shoes", name: "Shoes", imageUrl: "/shoes.jpeg" },
-  { href: "/jackets", name: "Jackets", imageUrl: "/jackets.jpeg" },
-  { href: "/tshirts", name: "Tshirts", imageUrl: "/tshirts.jpeg" },
-  { href: "/glasses", name: "Glasses", imageUrl: "/glasses.jpeg" },
-  { href: "/suits", name: "Suits", imageUrl: "/suits.jpeg" },
+  { href: "/category/Jeans", name: "Jeans", imageUrl: "/jeans.jpeg" },
+  { href: "/category/Shoes", name: "Shoes", imageUrl: "/shoes.jpeg" },
+  { href: "/category/Tshirts", name: "Tshirts", imageUrl: "/tshirts.jpeg" },
+  { href: "/category/Glasses", name: "Glasses", imageUrl: "/glasses.jpeg" },
+  { href: "/category/Jackets", name: "Jackets", imageUrl: "/jackets.jpeg" },
+  { href: "/category/Suits", name: "Suits", imageUrl: "/suits.jpeg" },
 ];
 
 function HomePage() {
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Title and description with proper spacing */}
+      {/* Title and description */}
       <div className={classes.headingContainer}>
         <h1 className={classes.titleText}>Explore our Categories</h1>
         <p className={classes.paragraphText}>Discover the best products for your needs</p>

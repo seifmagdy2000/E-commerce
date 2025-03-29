@@ -4,22 +4,22 @@ import { Trash, Star, ChevronDown, ChevronUp } from "lucide-react";
 
 const classes = {
   container: "mt-6 w-full max-w-5xl mx-auto bg-white p-6 rounded-lg flex flex-col items-center", 
-  title: "text-lg font-semibold text-gray-700 mb-4 text-left",
-  list: "w-full flex flex-col items-center space-y-4",
-  card: "w-full max-w-4xl p-4  rounded-lg shadow-sm cursor-pointer transition-all duration-300 flex",
-  expandedCard: "bg-gray-100 p-6 ",
-  image: "w-24 h-24 object-cover rounded-lg",
-  infoContainer: "ml-4 flex flex-col overflow-x-auto overflow-y-auto ",
-  name: "text-sm font-medium text-gray-800 mt-2  ",
-  price: "text-xs text-gray-500",
-  description: "text-xs text-gray-600 mt-2 ",
-  actions: "flex  mt-2",
-  button: "p-2 rounded-md hover:bg-gray-100",
+  title: "text-xl font-semibold text-gray-800 mb-6",
+  list: "w-full flex flex-col items-center space-y-6",
+  card: "w-full max-w-4xl p-4 rounded-xl shadow-md border border-gray-200 transition-all duration-300 flex items-center gap-4 hover:shadow-lg",
+  image: "w-28 h-28 object-cover rounded-lg border border-gray-300",
+  infoContainer: "flex-1 flex flex-col justify-center",
+  name: "text-lg font-semibold text-gray-900",
+  price: "text-md font-medium text-gray-600 mt-1",
+  category: "text-sm text-orange-600 font-medium mt-1",
+  quantity: "text-sm text-gray-600 font-medium mt-1",
+  description: "text-sm text-gray-700 mt-2",
+  actions: "flex items-center gap-3 mt-3",
+  button: "p-2 rounded-lg transition hover:bg-gray-200",
   featured: "text-yellow-500",
-  pagination: "w-full flex justify-between items-center mt-4 px-4",
-  pageButton: "px-3 py-1 bg-orange-500 text-white rounded-md disabled:opacity-50 hover:bg-orange-600",
+  pagination: "w-full flex justify-between items-center mt-6 px-4",
+  pageButton: "px-4 py-2 bg-orange-500 text-white rounded-lg disabled:opacity-50 hover:bg-orange-600",
 };
-
 
 function ProductsList() {
   const {
@@ -33,7 +33,7 @@ function ProductsList() {
   const [expandedCard, setExpandedCard] = useState(null);
 
   useEffect(() => {
-    fetchAllProducts(); 
+    fetchAllProducts();
   }, []);
 
   return (
@@ -48,22 +48,24 @@ function ProductsList() {
               onClick={() => setExpandedCard(expandedCard === product._id ? null : product._id)}
             >
               <img src={product.image} alt={product.name} className={classes.image} />
+              
               <div className={classes.infoContainer}>
                 <p className={classes.name}>{product.name}</p>
                 <p className={classes.price}>${product.price}</p>
-                
-                {expandedCard === product._id && <div>
-                    <p className={classes.price}>Quantity: {product.quantity}</p>
+                <p className={classes.quantity}>Stock: {product.quantity} available</p>
+                <p className={classes.category}>Category: {product.category}</p>
 
+                {expandedCard === product._id && (
                   <p className={classes.description}>{product.description}</p>
-                 </div>}
+                )}
+
                 <div className={classes.actions}>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       toggleFeaturedProducts(product._id);
                     }}
-                    className={`${classes.button} ${product.isFeatured ? classes.featured : ""}`}
+                    className={`${classes.button} ${product.isFeatured ? "text-yellow-500" : "text-gray-600"}`}
                   >
                     <Star />
                   </button>
@@ -72,13 +74,14 @@ function ProductsList() {
                       e.stopPropagation();
                       deleteProduct(product._id);
                     }}
-                    className={classes.button}
+                    className={`${classes.button} text-red-500`}
                   >
-                    <Trash className="text-red-500" />
+                    <Trash />
                   </button>
                 </div>
               </div>
-              <div className="flex items-center ml-auto betwee">
+
+              <div className="flex items-center ml-auto">
                 {expandedCard === product._id ? <ChevronUp /> : <ChevronDown />}
               </div>
             </div>
@@ -98,7 +101,7 @@ function ProductsList() {
           >
             Previous
           </button>
-          <span>
+          <span className="text-gray-700">
             Page {pagination.currentPage} of {pagination.totalPages}
           </span>
           <button
