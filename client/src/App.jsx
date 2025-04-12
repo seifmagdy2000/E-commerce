@@ -7,6 +7,7 @@ import LoginPage from "./pages/LoginPage.jsx";
 import SignupPage from "./pages/SignupPage.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
 import CategoryPage from "./pages/CategoryPage.jsx";
+import CartPage from "./pages/CartPage.jsx";
 
 function App() {
   const { user, checkAuth, checkingAuth } = useUserStore();
@@ -21,8 +22,8 @@ function App() {
 
   useEffect(() => {
     const isPublicRoute = publicRoutes.some(route => 
-      location.pathname === route ||               // Exact match
-      location.pathname.startsWith(`${route}/`)    // Dynamic sub-routes 
+      location.pathname === route ||              
+      location.pathname.startsWith(`${route}/`)     
     );
 
     if (!isPublicRoute) {
@@ -49,6 +50,7 @@ function App() {
       <div className="w-full max-w-6xl p-4">
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/cart" element={<CartPage />} />
           <Route path="/category/:category" element={<CategoryPage />} />
           <Route path="/signup" element={user ? <Navigate to="/" /> : <SignupPage />} />
           <Route path="/login" element={user ? <Navigate to="/" /> : <LoginPage />} />
