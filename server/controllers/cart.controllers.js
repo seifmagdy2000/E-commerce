@@ -1,24 +1,22 @@
 import {
   getCartItemsService,
   addToCartService,
-  removeAllCartItemsService,
-  removeItemService,
   updateCartItemQuantityService,
+  removeItemService,
+  removeAllCartItemsService,
 } from "../service/cart.services.js";
 
 export const getCartItems = async (req, res) => {
   try {
-    const cartItems = await getCartItemsService(req.user);
-
-    if (!cartItems.length) {
-      return res.status(404).json({ message: "No cart items found" });
-    }
-
-    return res.status(200).json({ items: cartItems });
+    const items = await getCartItemsService(req.user);
+    res.json({
+      success: true,
+      items,
+    });
   } catch (error) {
-    return res.status(500).json({
-      message: "Server error retrieving cart items",
-      error: error.message,
+    res.status(500).json({
+      success: false,
+      message: error.message,
     });
   }
 };
@@ -26,82 +24,65 @@ export const getCartItems = async (req, res) => {
 export const addToCart = async (req, res) => {
   try {
     const { productId, quantity } = req.body;
-    if (!productId || !quantity || quantity <= 0) {
-      return res
-        .status(400)
-        .json({ message: "Product ID and valid quantity are required" });
-    }
-
-    const updatedCart = await addToCartService(req.user, productId, quantity);
-
-    return res.status(200).json({
-      items: updatedCart,
-      message: "Item added to cart successfully",
+    const items = await addToCartService(req.user, productId, quantity);
+    res.json({
+      success: true,
+      items,
     });
   } catch (error) {
-    return res.status(500).json({
-      message: "Server error adding item to cart",
-      error: error.message,
+    res.status(400).json({
+      success: false,
+      message: error.message,
     });
   }
 };
 
-export const removeAllCartItems = async (req, res) => {
+export const updateCartItem = async (req, res) => {
   try {
-    const response = await removeAllCartItemsService(req.user);
-    return res.status(200).json(response);
-  } catch (error) {
-    return res.status(500).json({
-      message: "Server error removing cart items",
-      error: error.message,
-    });
-  }
-};
-
-export const updateQuantity = async (req, res) => {
-  try {
-    const { productId, quantity } = req.body;
-    if (!productId || !quantity || quantity <= 0) {
-      return res
-        .status(400)
-        .json({ message: "Product ID and valid quantity are required" });
-    }
-
-    const updatedItem = await updateCartItemQuantityService(
+    const { quantity } = req.body;
+    const item = await updateCartItemQuantityService(
       req.user,
-      productId,
+      req.params.id,
       quantity
     );
-
-    return res.status(200).json({
-      message: "Quantity updated successfully",
-      item: updatedItem,
+    res.json({
+      success: true,
+      item,
     });
   } catch (error) {
-    return res.status(500).json({
-      message: "Server error updating quantity",
-      error: error.message,
+    res.status(400).json({
+      success: false,
+      message: error.message,
     });
   }
 };
 
-export const removeItem = async (req, res) => {
+export const removeCartItem = async (req, res) => {
   try {
-    const { productId } = req.body;
-    if (!productId) {
-      return res.status(400).json({ message: "Product ID is required" });
-    }
-
-    const removedItem = await removeItemService(req.user, productId);
-
-    return res.status(200).json({
-      message: "Item removed from cart successfully",
-      removedItem,
+    await removeItemService(req.user, req.params.id);
+    res.json({
+      success: true,
+      message: "Item removed from cart",
     });
   } catch (error) {
-    return res.status(500).json({
-      message: "Server error removing item from cart",
-      error: error.message,
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const clearCart = async (req, res) => {
+  try {
+    await removeAllCartItemsService(req.user);
+    res.json({
+      success: true,
+      message: "Cart cleared successfully",
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
     });
   }
 };

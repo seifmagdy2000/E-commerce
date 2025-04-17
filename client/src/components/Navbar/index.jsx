@@ -1,6 +1,8 @@
-import React from "react";
+import  { useEffect } from "react";
 import { Link } from "react-router-dom";
 import DesktopNavbar from "./desktop/DesktopNavbar.jsx";
+import { useCartStore } from "../../stores/useCartStore.js";
+
 
 
 const classes = {
@@ -8,8 +10,12 @@ const classes = {
   header: "sticky top-0 left-0 w-full bg-orange-500 h-16 flex items-center px-6 shadow-sm z-50", 
 };
 function Navbar() {
-
-
+  
+  
+  const getCartItems = useCartStore((state) => state.getCartItems);
+  useEffect(() => {
+  getCartItems(); 
+  }, []);
   return (
     <header className={classes.header} id="header">
       <div className="max-w-8xl w-full flex justify-between items-center mx-auto">

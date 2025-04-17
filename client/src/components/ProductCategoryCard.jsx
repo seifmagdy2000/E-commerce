@@ -1,8 +1,8 @@
-import React, { use } from "react";
+import React from "react";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { useUserStore } from "../stores/useUserStore";
-
+import { useCartStore } from "../stores/useCartStore";
 
 const classes = {
   card: "bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow flex flex-col justify-between",
@@ -20,24 +20,30 @@ const classes = {
 };
 
 const ProductCard = ({ product }) => {
-  const {user} = useUserStore();
-  const handleAddToCart = () => {
+  const { user } = useUserStore();
+  const { addToCart, getCartItems } = useCartStore();
+
+  //add to  cart
+  const handleAddToCart = async () => {
     if (!user) {
-      toast.error("Please login to add to cart!", {id: "login"});
+      toast.error("Please login to add to cart!", { id: "login-toast" });
       return;
     }
-    toast.success("Product added to cart!",{id: "success"});
+
+    try {
+      await addToCart(product);
+      await getCartItems(); 
+      toast.success("Product added to cart!", { id: "success-toast" });
+    } catch (error) {
+      toast.error("Error adding product to cart", { id: "error-toast" });
+    }
   };
 
   return (
     <div className={classes.card}>
       <div className={classes.imageContainer}>
         {product.image ? (
-          <img
-            src={product.image}
-            alt={product.name}
-            className={classes.image}
-          />
+          <img src={product.image} alt={product.name} className={classes.image} />
         ) : (
           <span className="text-gray-400">No Image</span>
         )}
@@ -45,22 +51,17 @@ const ProductCard = ({ product }) => {
       <div className={classes.details}>
         <h3 className={classes.productName}>{product.name}</h3>
         <div className="flex justify-between items-center mb-2">
-        <p className={classes.price}>${product.price.toFixed(2)}</p>
-        <span
+          <p className={classes.price}>${product.price.toFixed(2)}</p>
+          <span
             className={`${classes.stockBadge} ${
-            product.quantity > 0
-                ? classes.stockAvailable
-                : classes.stockUnavailable
+              product.quantity > 0 ? classes.stockAvailable : classes.stockUnavailable
             }`}
-        >
+          >
             {product.quantity > 0 ? "In Stock" : "Out of Stock"}
-        </span>
+          </span>
         </div>
 
-        {product.isFeatured && (
-        <span className={classes.featuredBadge}>Featured</span>
-        )}
-
+        {product.isFeatured && <span className={classes.featuredBadge}>Featured</span>}
 
         <button
           onClick={handleAddToCart}
@@ -77,4 +78,5 @@ const ProductCard = ({ product }) => {
     </div>
   );
 };
+
 export default ProductCard;

@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { ShoppingCart, UserPlus, LogIn, LogOut, LayoutDashboard } from "lucide-react";
 import MobileNavBar from "../mobile/MobileNavBar.jsx";
 import { useUserStore } from "../../../stores/useUserStore.js";
+import { useCartStore } from "../../../stores/useCartStore.js";
+
 
 const classes = {
   header: "fixed top-0 left-0 w-full bg-orange-500 h-16 flex items-center px-6 shadow-lg z-50",
@@ -16,17 +18,22 @@ const classes = {
 };
 
 function DesktopNavbar() {
+  const {cart} = useCartStore();
   const { user, logout } = useUserStore();
   const navigate = useNavigate();
   const isAdmin = user?.role === "admin";
 
   const handleLogout = async () => {
-    await logout();
-    navigate("/login"); // Redirect to login page
+    try {
+      await logout();
+      navigate("/login");
+    } catch (error) {
+      toast.error("Logout failed. Please try again.");
+    }
   };
 
   const getLinks = () => {
-    const cartItemCount = user?.cartItems?.length || 0;
+    const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
 
     return user
       ? [
@@ -43,7 +50,7 @@ function DesktopNavbar() {
           {
             text: "Logout",
             icon: <LogOut size={20} />,
-            onClick: handleLogout, // Call handleLogout on click
+            onClick: handleLogout,
           },
           ...(isAdmin ? [{ to: "/secret-dashboard", text: "Dashboard", icon: <LayoutDashboard size={20} /> }] : []),
         ]
