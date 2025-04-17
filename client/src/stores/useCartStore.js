@@ -137,7 +137,6 @@ export const useCartStore = create((set, get) => ({
       console.log(`[removeFromCart] Removing product ${productId}`);
       set({ loading: true, error: null });
 
-      // Optimistic update
       set((state) => {
         const updatedCart = state.cart.filter(
           (item) => item.product._id !== productId
